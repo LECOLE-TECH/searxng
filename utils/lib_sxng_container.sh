@@ -107,15 +107,15 @@ container.build() {
             params_build+=" --tag=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:${CONTAINER_IMAGE_NAME,,}-$arch$variant"
         else
             # Tags
-            params_build+=" --tag=localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:latest"
-            params_build+=" --tag=localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$DOCKER_TAG"
+            params_build+=" --tag=localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/$CONTAINER_IMAGE_NAME:latest"
+            params_build+=" --tag=localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/$CONTAINER_IMAGE_NAME:$DOCKER_TAG"
         fi
 
         # shellcheck disable=SC2086 # Variable interpolation is intended here
         "$container_engine" $params_build_builder \
             --build-arg="TIMESTAMP_SETTINGS=$(git log -1 --format="%cd" --date=unix -- ./searx/settings.yml)" \
             --build-arg="TIMESTAMP_UWSGI=$(git log -1 --format="%cd" --date=unix -- ./container/uwsgi.ini)" \
-            --tag="localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:builder" \
+            --tag="localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/$CONTAINER_IMAGE_NAME:builder" \
             --file="./container/$dockerfile" \
             .
         build_msg CONTAINER "Image \"builder\" built"
