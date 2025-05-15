@@ -186,12 +186,12 @@ container.test() {
     (
         set -e
 
-        podman pull "ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-$arch$variant"
+        podman pull "ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache:${CONTAINER_IMAGE_NAME,,}-$arch$variant"
 
         name="$CONTAINER_IMAGE_NAME-$(date +%N)"
 
         podman create --name="$name" --rm --timeout=60 --network="host" \
-            "ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-$arch$variant" >/dev/null
+            "ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache:${CONTAINER_IMAGE_NAME,,}-$arch$variant" >/dev/null
 
         podman start "$name" >/dev/null
         podman logs -f "$name" &
@@ -251,7 +251,7 @@ container.push() {
 
         # Pull archs
         for i in "${!archs[@]}"; do
-            podman pull "ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-${archs[$i]}${variants[$i]}"
+            podman pull "ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache:${CONTAINER_IMAGE_NAME,,}-${archs[$i]}${variants[$i]}"
         done
 
         # Manifest tags
@@ -260,15 +260,15 @@ container.push() {
 
         # Create manifests
         for tag in "${release_tags[@]}"; do
-            if ! podman manifest exists "localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$tag"; then
-                podman manifest create "localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$tag"
+            if ! podman manifest exists "localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/${CONTAINER_IMAGE_NAME,,}:$tag"; then
+                podman manifest create "localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/${CONTAINER_IMAGE_NAME,,}:$tag"
             fi
 
             # Add archs to manifest
             for i in "${!archs[@]}"; do
                 podman manifest add \
-                    "localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$tag" \
-                    "containers-storage:ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-${archs[$i]}${variants[$i]}"
+                    "localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/${CONTAINER_IMAGE_NAME,,}:$tag" \
+                    "containers-storage:ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache:${CONTAINER_IMAGE_NAME,,}-${archs[$i]}${variants[$i]}"
             done
         done
 
@@ -279,8 +279,8 @@ container.push() {
             build_msg CONTAINER "Pushing manifest with tag: $tag"
 
             podman manifest push \
-                "localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$tag" \
-                "docker://docker.io/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$tag"
+                "localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/${CONTAINER_IMAGE_NAME,,}:$tag" \
+                "docker://docker.io/${CONTAINER_IMAGE_ORGANIZATION,,}/${CONTAINER_IMAGE_NAME,,}:$tag"
         done
     )
     dump_return $?
