@@ -101,17 +101,17 @@ container.build() {
         fi
 
         if [ "$GITHUB_ACTIONS" = "true" ]; then
-            params_build_builder+=" --cache-from=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache --cache-to=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache"
+            params_build_builder+=" --cache-from=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache --cache-to=ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache"
 
             # Tags
-            params_build+=" --tag=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-$arch$variant"
+            params_build+=" --tag=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:${CONTAINER_IMAGE_NAME,,}-$arch$variant"
         else
             # Tags
             params_build+=" --tag=localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:latest"
             params_build+=" --tag=localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:$DOCKER_TAG"
         fi
 
-        # shellcheck disable=SC2086
+        # shellcheck disable=SC2086 # Variable interpolation is intended here
         "$container_engine" $params_build_builder \
             --build-arg="TIMESTAMP_SETTINGS=$(git log -1 --format="%cd" --date=unix -- ./searx/settings.yml)" \
             --build-arg="TIMESTAMP_UWSGI=$(git log -1 --format="%cd" --date=unix -- ./container/uwsgi.ini)" \
@@ -132,7 +132,7 @@ container.build() {
         build_msg CONTAINER "Image built"
 
         if [ "$GITHUB_ACTIONS" = "true" ]; then
-            "$container_engine" push "ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-$arch$variant"
+            "$container_engine" push "ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:${CONTAINER_IMAGE_NAME,,}-$arch$variant"
 
             # Output to GHA
             cat <<EOF >>"$GITHUB_OUTPUT"
