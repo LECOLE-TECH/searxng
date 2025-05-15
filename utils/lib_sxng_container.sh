@@ -115,7 +115,7 @@ container.build() {
         "$container_engine" $params_build_builder \
             --build-arg="TIMESTAMP_SETTINGS=$(git log -1 --format="%cd" --date=unix -- ./searx/settings.yml)" \
             --build-arg="TIMESTAMP_UWSGI=$(git log -1 --format="%cd" --date=unix -- ./container/uwsgi.ini)" \
-            --tag="localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:builder" \
+            --tag="localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/$CONTAINER_IMAGE_NAME:builder" \
             --file="./container/$dockerfile" \
             .
         build_msg CONTAINER "Image \"builder\" built"
