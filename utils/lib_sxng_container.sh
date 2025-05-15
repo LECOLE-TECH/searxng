@@ -8,7 +8,7 @@ container.:
 EOF
 }
 
-CONTAINER_IMAGE_ORGANIZATION=${GITHUB_REPOSITORY_OWNER:-"searxng"}
+CONTAINER_IMAGE_ORGANIZATION=${GITHUB_REPOSITORY_OWNER,,:-"searxng"}
 CONTAINER_IMAGE_NAME="searxng"
 
 container.build() {
@@ -101,10 +101,10 @@ container.build() {
         fi
 
         if [ "$GITHUB_ACTIONS" = "true" ]; then
-            params_build_builder+=" --cache-from=ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache --cache-to=ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache"
+            params_build_builder+=" --cache-from=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache --cache-to=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache"
 
             # Tags
-            params_build+=" --tag=ghcr.io/${CONTAINER_IMAGE_ORGANIZATION,,}/cache:$CONTAINER_IMAGE_NAME-$arch$variant"
+            params_build+=" --tag=ghcr.io/$CONTAINER_IMAGE_ORGANIZATION/cache:$CONTAINER_IMAGE_NAME-$arch$variant"
         else
             # Tags
             params_build+=" --tag=localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:latest"
@@ -115,7 +115,7 @@ container.build() {
         "$container_engine" $params_build_builder \
             --build-arg="TIMESTAMP_SETTINGS=$(git log -1 --format="%cd" --date=unix -- ./searx/settings.yml)" \
             --build-arg="TIMESTAMP_UWSGI=$(git log -1 --format="%cd" --date=unix -- ./container/uwsgi.ini)" \
-            --tag="localhost/${CONTAINER_IMAGE_ORGANIZATION,,}/$CONTAINER_IMAGE_NAME:builder" \
+            --tag="localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:builder" \
             --file="./container/$dockerfile" \
             .
         build_msg CONTAINER "Image \"builder\" built"
